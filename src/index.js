@@ -8,6 +8,7 @@ var esformatter = require( 'gulp-esformatter' );
 var when = require( 'when' );
 var _ = require( 'lodash' );
 var path = require( 'path' );
+var argv = require( 'yargs' ).argv;
 var gulp = require( 'gulp' );
 
 var cmdPostfix = process.platform === 'win32' ? '.cmd' : '';
@@ -69,6 +70,19 @@ function runSpecs( specPath ) {
 	if ( args.length === 0 ) {
 		args = [ defaultSpecs ];
 	}
+
+	if ( argv.s ) {
+		args = _.map( args, function( arg ) {
+			return [ arg[ 0 ].replace( /\*.spec/, argv.s + '.spec' ) ];
+		} );
+	}
+
+	if ( argv.t ) {
+		args = _.map( args, function( arg ) {
+			return [ arg[ 0 ].replace( /\*\*/, argv.t ) ];
+		} );
+	}
+
 	var joinArgs = _.flatten( [ specPath ].concat( args ) );
 	var specs = path.join.apply( path, joinArgs );
 	return gulp.src( [ specs ], { read: false } )
